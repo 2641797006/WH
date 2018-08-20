@@ -1,7 +1,8 @@
 /*
- * <windows.h> should be include before this file
  * pinkwin.h
- * char s[1024+]; should be add in main.c file 
+ * <windows.h> should be include before this file
+ * HINSTANCE hInst; char s[1024+]; should be add in main.c file 
+ * 
  *
  */
 
@@ -14,11 +15,8 @@
 //windres picon.rc picon.o
 #endif
 
-#ifdef _WINDOWS_H
-
-#ifndef _STRING_H
  __attribute__((__cdecl__)) __attribute__((__nothrow__)) char *strcat (char *, const char *);
-#endif
+
 
 #define pWinMain(pint1,pint2,pc,vint) int __attribute__((__stdcall__)) WinMain (HINSTANCE pint1, HINSTANCE pint2, LPSTR pc, int vint)
 #define pinkwin() pWinMain(hInstance,hPrevInstance,lpCmdLine,nCmdShow)
@@ -29,6 +27,8 @@
 #define pinkfunc() pWinFunc(WndProc,hwnd,Message,wParam,lParam)
 #define pWinCFun(FuncType,WndProc,pint,uint1,uint2,vlong) FuncType (__attribute__((__stdcall__)) WndProc) (HWND pint, UINT uint1, WPARAM uint2, LPARAM vlong)
 #define pinkcfun(FuncType,FuncName) pWinCFun(FuncType,FuncName,hwnd,Message,wParam,lParam)
+
+#define pRGB(x) ( ((x&0xff)<<16) | (x&0xff00) | ((x&0xff0000)>>16) )
 
 #define pinkwc(wc,ClassName,Picon,pColorRGB)\
 			WNDCLASSEX wc;\
@@ -84,13 +84,16 @@
 
 #define pinkwinA() pWinClass(_P_win_class_,"_P_pink_value_");\
 		pinkwin(){\
-			pinkwc(wc,_P_win_class_,PI_WH,0x86ffb3);\
+			hInst=hInstance;\
+			pinkwc(wc,_P_win_class_,PI_WH,pRGB(0x2095f3));\
 			pRegisterClass(wc);\
 			HWND hwnd;\
-			char exePathName[MAX_PATH+32], P_flag_str[32]=" - WhiteHat 6.66";\
-			pExeName(exePathName);\
-			strcat(exePathName,P_flag_str);\
-			pCreateWindow(hwnd,_P_win_class_,exePathName);\
+			{\
+				char exePathName[MAX_PATH+32], P_flag_str[32]=" - WhiteHat 6.66";\
+				pExeName(exePathName);\
+				strcat(exePathName,P_flag_str);\
+				pCreateWindow(hwnd,_P_win_class_,exePathName);\
+			}\
 			ShowWindow(hwnd,nCmdShow);\
 			UpdateWindow(hwnd);\
 			MSG Msg;\
@@ -104,28 +107,34 @@
 		width=rect.right-rect.left, height=rect.bottom-rect.top;\
 	}
 
+#define pGetClientWH(hwnd,width,height){\
+		RECT rect;\
+		GetClientRect(hwnd,&rect);\
+		width=rect.right-rect.left, height=rect.bottom-rect.top;\
+	}
+
 #define pGetLastError(){\
 		char pErrorCode[16];\
 		sprintf(pErrorCode,"%d",GetLastError());\
 		MessageBox(hwnd,pErrorCode,"P Error Code",MB_OK);\
 	}
 
-void pReportErrorFunc(hwnd,pErrorCode,ErrorCodeID)
+void pReportErrorFunc(HWND hwnd, int pErrorCode, int ErrorCodeID, int CodeID_x)
 {
 	pErrorCode+=ErrorCodeID<<16;
-	char pReportStr[128];
-	sprintf(pReportStr, "Error Code: 0x%08X\nSend the Error-Code to the Author?", pErrorCode);
+	char pReportStr[256];
+	sprintf(pReportStr, "Error Code: 0x%04X%08X\nSend the Error-Code to the Author?", CodeID_x, pErrorCode);
 	int x = MessageBox(hwnd, pReportStr, "Error!  --ReportError()", MB_OKCANCEL | MB_ICONWARNING);
 	if(x==IDOK){
-		sprintf(pReportStr, "mailto:yongxxone@gmail.com?subject=Report Error Code(WH6.66)&body=Error Code: 0x%08X%%0d%%0a%%0d%%0a%%0d%%0a%%0d%%0a", pErrorCode);
+		sprintf(pReportStr, "mailto:yongxxone@gmail.com?subject=Report Error Code(WH6.66)&body=Error Code: 0x%04X%08X%%0d%%0a%%0d%%0a%%0d%%0a%%0d%%0a", CodeID_x, pErrorCode);
 		ShellExecute(hwnd, "open", pReportStr, NULL, NULL, SW_SHOWNORMAL);
 	}
 }
 
-#define pReportError(hwnd,ErrorCodeID){\
+#define __ReportError(hwnd, ErrorCodeID, CodeID_x){\
 		int pErrorCode=GetLastError();\
 		if(pErrorCode!=0)\
-			pReportErrorFunc(hwnd,pErrorCode,ErrorCodeID);\
+			pReportErrorFunc(hwnd,pErrorCode,ErrorCodeID,CodeID_x);\
 	}
 
 #define pCoutInt(value){\
@@ -147,7 +156,7 @@ void pReportErrorFunc(hwnd,pErrorCode,ErrorCodeID)
 		MessageBox(hwnd,s,"pCoutFont(hdc)",MB_OK);\
 	}
 
-#define pSetWinFont(hwnd,defFont)	SendMessage(hwnd, WM_SETFONT, (WPARAM)GetStockObject(defFont), (LPARAM)TRUE)
+#define pSetWinFont(hwnd,defFont)	SendMessage(hwnd, WM_SETFONT, (WPARAM)defFont, (LPARAM)TRUE)
 
 #define pSetCwinFont(hwnd,id,defFont)	SendMessage(GetDlgItem(hwnd,id), WM_SETFONT, (WPARAM)defFont, (LPARAM)TRUE)
 
@@ -178,7 +187,7 @@ void pReportErrorFunc(hwnd,pErrorCode,ErrorCodeID)
 #define pGetAdmin(){\
 		pExeName(s);\
 		ShellExecute(hwnd, "runas", s, NULL, NULL, SW_SHOWNORMAL);\
-		pReportError(hwnd,0xad00);\
+		__ReportError(hwnd,0xad00,0);\
 		DestroyWindow(hwnd);\
 	}
 
@@ -223,5 +232,6 @@ void pReportErrorFunc(hwnd,pErrorCode,ErrorCodeID)
 
 #define pCreateFont(height, fontname)	CreateFont(height, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, fontname)
 
-#endif
+#define pHLWORD(hiword, loword) ( (hiword<<16) | loword )
+
 #endif

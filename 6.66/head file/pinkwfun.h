@@ -60,7 +60,7 @@ int Leap_Static(HWND hwnd, int x, int y, char* s)
 	if(n<1800)
 		SetWindowText(hwnd, s);
 	else{
-		ps=strchr(s, '\n');
+		ps=strchr( strchr(s, '\n')+1, '\n');
 		SetWindowText(hwnd, ps+1);
 	}
 	return 0;

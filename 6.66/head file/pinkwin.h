@@ -57,7 +57,7 @@
 			ClassName,\
 			WindowName,\
 			WS_OVERLAPPEDWINDOW,\
-			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,\
+			CW_USEDEFAULT, CW_USEDEFAULT, 1025, 525,\
 			NULL, NULL, hInstance, NULL);\
 		if(hwnd == NULL){\
 			MessageBox(NULL, "Window Creation Failed!", "Error!",MB_ICONEXCLAMATION | MB_OK);\

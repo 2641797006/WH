@@ -1,0 +1,40 @@
+#if defined(UNDER_CE)
+	#include <winbase.h>
+#else
+	#include <winver.h>
+#endif
+
+VS_VERSION_INFO VERSIONINFO
+	FILEVERSION 10,0,8,6
+	PRODUCTVERSION 10,0,8,6
+	FILEFLAGSMASK 0x3fL
+
+#ifdef _DEBUG
+	FILEFLAGS VS_FF_DEBUG
+#else
+	FILEFLAGS 0x0L
+#endif
+
+	FILEOS VOS__WINDOWS32
+	FILETYPE VFT_APP
+	FILESUBTYPE 0x0L
+{
+	BLOCK "StringFileInfo"
+	{
+		BLOCK "080404b0"
+		{
+			VALUE "CompanyName", "Nine Star Alliance."
+			VALUE "FileDescription", "À¬»ø¶¯»­ WH-GUI"
+			VALUE "FileVersion", "10.0.8.6"
+			VALUE "InternalName", "À¬»ø¶¯»­(WH).exe"
+			VALUE "LegalCopyright", "Copyright (C) Free Software Foundation, Inc."
+			VALUE "OriginalFilename", "À¬»ø¶¯»­.exe"
+			VALUE "ProductName", "À¬»ø¶¯»­(WH)"
+			VALUE "ProductVersion", "10.0.8.6"
+		}
+	}
+	BLOCK "VarFileInfo"
+	{
+		VALUE "Translation", 0x804, 1200
+	}
+}

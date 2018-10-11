@@ -1,0 +1,3 @@
+#include <__pink/pinkres.h>
+
+BMP_live2d BITMAP DISCARDABLE	"live2d.bmp"

@@ -1,0 +1,9 @@
+openssl genrsa -aes256 -out server.key 2048
+
+openssl req -sha512 -new -x509 -key server.key -out server.crt -days 3650
+
+openssl pkcs12 -export -out certificate.pfx -inkey privateKey.key -in certificate.crt (-certfile more.crt)
+
+signtool sign /fd sha512 /f wh.pfx /p ******** name.exe
+
+signtool sign /fd sha512 /f wh.pfx /p ******** /t http://timestamp.verisign.com/scripts/timstamp.dll name.exe
